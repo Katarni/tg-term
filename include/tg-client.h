@@ -7,12 +7,13 @@
 
 
 struct TgClient {
-    int client_id;
+    int id;
 };
 
 
 struct TgClient* initClient();
-
 int closeClient(struct TgClient* tg_client);
+
+void sendReq(struct TgClient* client, const char* type, int argc, const char** argv_keys, json_object** argv_vals);
 
 #endif /* _TG_CLIENT_H */
