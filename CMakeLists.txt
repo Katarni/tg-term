@@ -1,0 +1,15 @@
+cmake_minimum_required(VERSION 3.28.1)
+project(tg-term)
+
+set(CMAKE_C_STANDARD 23)
+
+add_executable(tg-term
+                 main.c
+                 include/tg-client.h
+                 source/tg-client.c
+)
+
+find_package(json-c CONFIG)
+find_package(Curses REQUIRED)
+find_package(Td 1.8.0 REQUIRED)
+target_link_libraries(tg-term PRIVATE Td::TdJsonStatic json-c::json-c Curses)
