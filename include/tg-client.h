@@ -7,7 +7,7 @@
 
 
 struct TgClient {
-    void* client;
+    int client_id;
 };
 
 

@@ -2,9 +2,9 @@
 
 struct TgClient* initClient() {
     struct TgClient* tg_client = malloc(sizeof(struct TgClient));
-    tg_client->client = td_json_client_create();
+    tg_client->client_id = td_create_client_id();
 
-    if (tg_client->client == NULL) {
+    if (tg_client->client_id == 0) {
         free(tg_client);
         return NULL;
     }
@@ -13,7 +13,6 @@ struct TgClient* initClient() {
 }
 
 int closeClient(struct TgClient* tg_client) {
-    td_json_client_destroy(tg_client->client);
     free(tg_client);
     tg_client = NULL;
 
