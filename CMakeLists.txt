@@ -12,4 +12,11 @@ add_executable(tg-term
 find_package(json-c CONFIG)
 find_package(Curses REQUIRED)
 find_package(Td 1.8.0 REQUIRED)
-target_link_libraries(tg-term PRIVATE Td::TdJsonStatic json-c::json-c Curses)
+find_package(OpenSSL REQUIRED)
+target_link_libraries(tg-term PRIVATE
+                             Td::TdJsonStatic 
+                             json-c::json-c 
+                             Curses
+                             OpenSSL::SSL
+                             OpenSSL::Crypto
+)
