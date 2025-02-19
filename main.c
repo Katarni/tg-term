@@ -3,6 +3,11 @@
 int main(int argc, char **argv) {
     struct TgClient *tg_client = initClient();
 
+    if (tg_client == NULL) {
+        printf("Unaviable to create client");
+        return 0;
+    }
+
     // authPhone(tg_client, "+79174338380");
 
     while (true) {

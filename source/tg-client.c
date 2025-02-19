@@ -11,7 +11,7 @@ struct TgClient* initClient() {
     tg_client->logged_in = 0;
 
     if (readApiKeys(tg_client)) {
-        printf("cant read api kays");
+        printf("cant read api kays\n");
         free(tg_client);
         return NULL;
     }
@@ -24,8 +24,8 @@ struct TgClient* initClient() {
     json_object_object_add(argv_vals[0], "database_directory", json_object_new_string("tdlib_db"));
     json_object_object_add(argv_vals[0], "use_message_database", json_object_new_boolean(1));
     json_object_object_add(argv_vals[0], "use_secret_chats", json_object_new_boolean(1));
-    json_object_object_add(argv_vals[0], "api_id", json_object_new_int(23702440));
-    json_object_object_add(argv_vals[0], "api_hash", json_object_new_string("898ac9c8eccbe67a33c0445693bfd505"));
+    json_object_object_add(argv_vals[0], "api_id", json_object_new_int(tg_client->api_id));
+    json_object_object_add(argv_vals[0], "api_hash", json_object_new_string(tg_client->api_hash));
     json_object_object_add(argv_vals[0], "system_language_code", json_object_new_string("en"));
     json_object_object_add(argv_vals[0], "device_model", json_object_new_string("Desktop"));
     json_object_object_add(argv_vals[0], "application_version", json_object_new_string("1.0"));
@@ -109,7 +109,7 @@ int readApiKeys(struct TgClient *client) {
     }
     
     char *line = NULL;
-    int line_len = 0; 
+    size_t line_len = 0; 
 
     int read_len = getline(&line, &line_len, keys_storage);
 
@@ -118,8 +118,34 @@ int readApiKeys(struct TgClient *client) {
         return -1;
     }
 
+    client->api_id = atoll(line);    
 
+    free(line);
 
+    if (client->api_id == 0) {
+        fclose(keys_storage);
+        return -1;
+    }
+
+    line = NULL, line_len = 0;
+
+    read_len = getline(&line, &line_len, keys_storage);
+
+    if (read_len < 1) {
+        fclose(keys_storage);
+        return -1;
+    }
+
+    int hash_len = 0;
+    while (line[hash_len] != '\n') ++hash_len;
+
+    client->api_hash = malloc(hash_len);
+    for (int i = 0; i < hash_len; ++i) {
+        client->api_hash[i] = line[i];
+    }
+    
+    free(line);
     fclose(keys_storage);
+
     return 0;
 }

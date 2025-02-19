@@ -3,13 +3,15 @@
 
 #include <json-c/json.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <td/telegram/td_json_client.h>
 #include <openssl/rand.h>
 
 
 struct TgClient {
-    int id, logged_in, api_id;
-    char* database_key, api_hash;
+    int id, logged_in;
+    long long api_id;
+    char *database_key, *api_hash;
 };
 
 
