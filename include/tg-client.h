@@ -22,7 +22,7 @@ void sendReq(struct TgClient* client, const char* type, int argc, const char** a
 
 void authPhone(struct TgClient* client, const char* phone);
 
-char* getTDatabaseEncryptCode();
+void getTDatabaseEncryptCode(struct TgClient *client);
 
 int readApiKeys(struct TgClient *client);
 

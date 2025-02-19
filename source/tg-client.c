@@ -43,7 +43,8 @@ struct TgClient* initClient() {
     argv_keys[0] = "encryption_key";
 
     argv_vals = malloc(sizeof(json_object*));
-    argv_vals[0] = json_object_new_string(getTDatabaseEncryptCode());
+    getTDatabaseEncryptCode(tg_client);
+    argv_vals[0] = json_object_new_string(tg_client->database_key);
 
     sendReq(tg_client, "checkDatabaseEncryptionKey", 1, argv_keys, argv_vals);
     
@@ -85,20 +86,30 @@ void authPhone(struct TgClient* client, const char* phone) {
     free(argv_vals);
 } 
 
-char* getTDatabaseEncryptCode() {
-    unsigned char* unsigned_tmp_key = malloc(32);
-    RAND_bytes(unsigned_tmp_key, 32);
+void getTDatabaseEncryptCode(struct TgClient *client) {
+    FILE *encrypt_key = fopen("../encrypt-key.env", "r");
+    if (encrypt_key == NULL) {
+        unsigned char* unsigned_tmp_key = malloc(32);
+        RAND_bytes(unsigned_tmp_key, 32);
+    
+        client->database_key = malloc(65);
+        for (size_t i = 0; i < 32; i++) {
+            sprintf(client->database_key + (i * 2), "%02x", unsigned_tmp_key[i]);
+        }
+    
+        client->database_key[64] = '\0';
+        free(unsigned_tmp_key);
 
-    char* key = malloc(65);
-    for (size_t i = 0; i < 32; i++) {
-        sprintf(key + (i * 2), "%02x", unsigned_tmp_key[i]);
+        encrypt_key = fopen("../encrypt-key.env", "w");
+        fputs(client->database_key, encrypt_key);
+        fclose(encrypt_key);
+
+        return;
     }
 
-    key[64] = '\0';
-
-    free(unsigned_tmp_key);
-
-    return key;
+    size_t line_len;
+    int read_len = getline(&client->database_key, &line_len, encrypt_key);
+    fclose(encrypt_key);
 }
 
 int readApiKeys(struct TgClient *client) {
