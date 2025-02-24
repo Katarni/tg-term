@@ -164,6 +164,9 @@ int readApiKeys(struct TgClient *client) {
 }
 
 void setLogsParams(struct TgClient* client, const char* log_file) {
+    FILE* file = fopen(log_file, "w");
+    fclose(file);
+
     const char** argv_keys = malloc(sizeof(char*));
     argv_keys[0] = "new_verbosity_level";
 
