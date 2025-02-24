@@ -6,6 +6,7 @@
 #include <stdlib.h>
 #include <td/telegram/td_json_client.h>
 #include <openssl/rand.h>
+#include <string.h>
 
 
 struct TgClient {
@@ -25,5 +26,9 @@ void authPhone(struct TgClient* client, const char* phone);
 void getTDatabaseEncryptCode(struct TgClient *client);
 
 int readApiKeys(struct TgClient *client);
+
+void setLogsParams(struct TgClient* client, const char* log_file);
+
+const char* getStringParam(struct json_object *object, const char *key);
 
 #endif /* _TG_CLIENT_H */

@@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 3.28.1)
 project(tg-term)
 
 set(CMAKE_C_STANDARD 23)
+#set(CMAKE_OSX_ARCHITECTURES "x86_64")
 
 add_executable(tg-term
                  main.c
