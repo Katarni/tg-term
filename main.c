@@ -14,10 +14,14 @@ int main(int argc, char **argv) {
 
         struct json_object *response = json_tokener_parse(res);
         const char* type = getStringParam(response, "@type");
-        // printf("%s\n", type);
         
         if (strcmp(type, "\"updateAuthorizationState\"") == 0) {
-            printf("%s\n", getStringParam(response, "authorization_state"));
+            const char* state_type = getStringParam(getParam(response, "authorization_state"), "@type");
+            printf("%s\n", state_type);
+            if (strcmp(state_type, "\"authorizationStateWaitPhoneNumber\"") == 0) {
+                authPhone(tg_client, "+79174338380");
+                printf("phone sent\n");
+            }
         }
     }
 

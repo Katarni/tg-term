@@ -152,10 +152,9 @@ int readApiKeys(struct TgClient *client) {
     while ('0' <= line[hash_len] && line[hash_len] <= '9' ||
              'a' <= line[hash_len] && line[hash_len] <= 'z') ++hash_len;
 
-    client->api_hash = malloc(hash_len);
-    for (int i = 0; i < hash_len; ++i) {
-        client->api_hash[i] = line[i];
-    }
+    client->api_hash = malloc(hash_len + 1);
+    memcpy(client->api_hash, line, hash_len);
+    client->api_hash[hash_len] = '\0';
     
     free(line);
     fclose(keys_storage);
@@ -195,6 +194,14 @@ const char* getStringParam(struct json_object *object, const char *key) {
     json_object *extracted;
     if (json_object_object_get_ex(object, key, &extracted)) {
         return json_object_to_json_string(extracted);
+    }
+    return NULL;
+}
+
+struct json_object* getParam(struct json_object *object, const char *key) {
+    json_object *extracted;
+    if (json_object_object_get_ex(object, key, &extracted)) {
+        return extracted;
     }
     return NULL;
 }

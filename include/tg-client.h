@@ -30,5 +30,7 @@ int readApiKeys(struct TgClient *client);
 void setLogsParams(struct TgClient* client, const char* log_file);
 
 const char* getStringParam(struct json_object *object, const char *key);
+struct json_object* getParam(struct json_object *object, const char *key);
+
 
 #endif /* _TG_CLIENT_H */
