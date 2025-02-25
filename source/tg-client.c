@@ -37,7 +37,7 @@ struct TgClient* initClient() {
     argv_keys[13] = "application_version";
 
     json_object** argv_vals = malloc(14*sizeof(json_object*));
-    argv_vals[0] = json_object_new_boolean(1);
+    argv_vals[0] = json_object_new_boolean(0);
     argv_vals[1] = json_object_new_string("tdlib_db");
     argv_vals[2] = json_object_new_string("tdlib_files");
     argv_vals[3] = json_object_new_string(client->database_key);
@@ -64,10 +64,11 @@ struct TgClient* initClient() {
     return client;
 }
 
-int closeClient(struct TgClient* tg_client) {
-    free(tg_client->database_key);
-    free(tg_client);
-    tg_client = NULL;
+int closeClient(struct TgClient* client) {
+    free(client->(api_hash);
+    free(client->database_key);
+    free(client);
+    client = NULL;
 
     return 0;
 }
