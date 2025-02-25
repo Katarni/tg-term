@@ -18,36 +18,48 @@ struct TgClient* initClient() {
         return NULL;
     }
 
-    const char** argv_keys = malloc(sizeof(char*));
-    argv_keys[0] = "parameters";
+    getTDatabaseEncryptCode(client);
 
-    json_object** argv_vals = malloc(sizeof(json_object*));
-    argv_vals[0] = json_object_new_object();
-    json_object_object_add(argv_vals[0], "database_directory", json_object_new_string("tdlib_db"));
-    json_object_object_add(argv_vals[0], "use_message_database", json_object_new_boolean(1));
-    json_object_object_add(argv_vals[0], "use_secret_chats", json_object_new_boolean(1));
-    json_object_object_add(argv_vals[0], "api_id", json_object_new_int(client->api_id));
-    json_object_object_add(argv_vals[0], "api_hash", json_object_new_string(client->api_hash));
-    json_object_object_add(argv_vals[0], "system_language_code", json_object_new_string("en"));
-    json_object_object_add(argv_vals[0], "device_model", json_object_new_string("Desktop"));
-    json_object_object_add(argv_vals[0], "application_version", json_object_new_string("1.0"));
-    json_object_object_add(argv_vals[0], "enable_storage_optimizer", json_object_new_boolean(1));
+    const char** argv_keys = malloc(14*sizeof(char*));
+    argv_keys[0] = "use_test_dc";
+    argv_keys[1] = "database_directory";
+    argv_keys[2] = "files_directory";
+    argv_keys[3] = "database_encryption_key";
+    argv_keys[4] = "use_file_database";
+    argv_keys[5] = "use_chat_info_database";
+    argv_keys[6] = "use_message_database";
+    argv_keys[7] = "use_secret_chats";
+    argv_keys[8] = "api_id";
+    argv_keys[9] = "api_hash";
+    argv_keys[10] = "system_language_code";
+    argv_keys[11] = "device_model";
+    argv_keys[12] = "system_version";
+    argv_keys[13] = "application_version";
 
-    sendReq(client, "setTdlibParameters", 1, argv_keys, argv_vals);
+    json_object** argv_vals = malloc(14*sizeof(json_object*));
+    argv_vals[0] = json_object_new_boolean(1);
+    argv_vals[1] = json_object_new_string("tdlib_db");
+    argv_vals[2] = json_object_new_string("tdlib_files");
+    argv_vals[3] = json_object_new_string(client->database_key);
+    argv_vals[4] = json_object_new_boolean(1);
+    argv_vals[5] = json_object_new_boolean(1);
+    argv_vals[6] = json_object_new_boolean(1);
+    argv_vals[7] = json_object_new_boolean(1);
+    argv_vals[8] = json_object_new_int(client->api_id);
+    argv_vals[9] = json_object_new_string(client->api_hash);
+    argv_vals[10] = json_object_new_string("en");
+    argv_vals[11] = json_object_new_string("Desctop");
+    argv_vals[12] = json_object_new_string("MacOs 15.2");
+    argv_vals[13] = json_object_new_string("1.0.0");
+
+    sendReq(client, "setTdlibParameters", 14, argv_keys, argv_vals);
 
     free(argv_keys);
 
-    free(argv_vals[0]);
+    for (int i = 0; i < 14; ++i) {
+        free(argv_vals[i]);
+    }
     free(argv_vals);
-
-    argv_keys = malloc(sizeof(char*));
-    argv_keys[0] = "encryption_key";
-
-    argv_vals = malloc(sizeof(json_object*));
-    getTDatabaseEncryptCode(client);
-    argv_vals[0] = json_object_new_string(client->database_key);
-
-    sendReq(client, "checkDatabaseEncryptionKey", 1, argv_keys, argv_vals);
     
     return client;
 }

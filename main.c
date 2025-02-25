@@ -17,11 +17,13 @@ int main(int argc, char **argv) {
         
         if (strcmp(type, "\"updateAuthorizationState\"") == 0) {
             const char* state_type = getStringParam(getParam(response, "authorization_state"), "@type");
-            printf("%s\n", state_type);
+            // printf("%s\n", state_type);
             if (strcmp(state_type, "\"authorizationStateWaitPhoneNumber\"") == 0) {
                 authPhone(tg_client, "+79174338380");
                 printf("phone sent\n");
             }
+        } else if (strcmp(type, "\"error\"") == 0) {
+            printf("error: %s\n", getStringParam(response, "message"));
         }
     }
 
