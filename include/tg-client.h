@@ -7,6 +7,7 @@
 #include <td/telegram/td_json_client.h>
 #include <openssl/rand.h>
 #include <string.h>
+#include <pthread.h>
 
 
 struct TgClient {

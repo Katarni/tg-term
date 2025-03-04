@@ -65,7 +65,7 @@ struct TgClient* initClient() {
 }
 
 int closeClient(struct TgClient* client) {
-    free(client->(api_hash);
+    free(client->api_hash);
     free(client->database_key);
     free(client);
     client = NULL;

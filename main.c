@@ -1,4 +1,4 @@
-#include "include/tg-client.h"
+#include "include/tg-loop.h"
 
 int main(int argc, char **argv) {
     struct TgClient *tg_client = initClient();
