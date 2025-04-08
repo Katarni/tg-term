@@ -16,8 +16,12 @@ Treminal telegram client builded with td json client and ncurces(probably)
 
 ## Starting
 + get you api key on [telegram site](https://my.telegram.org/)
-+ create td-api-key.env and write keys in format:
++ create tg-term config file in project dir (tg-term-config.json) and set params like this:
   ```
-    api_id
-    api_hash
+    {
+      "api-id" : your api id as int,
+      "api-hash" : your hash as string,
+      "log-file" : your log file as string, "../logs.dat" is default,
+      "log-lvl" : your log level, 1 is default;
+    }
   ```

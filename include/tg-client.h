@@ -11,9 +11,10 @@
 
 
 struct TgClient {
-    int id, logged_in;
+    int id, logged_in, log_lvl;
     long long api_id;
-    char *database_key, *api_hash;
+    const char *api_hash, *log_file;
+    char *database_key;
 };
 
 
@@ -26,11 +27,12 @@ void authPhone(struct TgClient* client, const char* phone);
 
 void getTDatabaseEncryptCode(struct TgClient *client);
 
-int readApiKeys(struct TgClient *client);
+int readClientParams(struct TgClient *client);
 
-void setLogsParams(struct TgClient* client, const char* log_file);
+void setLogsParams(struct TgClient* client);
 
 const char* getStringParam(struct json_object *object, const char *key);
+int getIntParam(struct json_object *object, const char* key);
 struct json_object* getParam(struct json_object *object, const char *key);
 
 

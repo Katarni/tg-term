@@ -10,14 +10,13 @@ struct TgClient* initClient() {
     }
     client->logged_in = 0;
 
-    setLogsParams(client, "../logs.dat");
-
-    if (readApiKeys(client)) {
-        printf("cant read api kays\n");
+    if (readClientParams(client)) {
+        printf("cant read api keys\n");
         free(client);
         return NULL;
     }
 
+    setLogsParams(client);
     getTDatabaseEncryptCode(client);
 
     const char** argv_keys = malloc(14*sizeof(char*));
@@ -65,7 +64,6 @@ struct TgClient* initClient() {
 }
 
 int closeClient(struct TgClient* client) {
-    free(client->api_hash);
     free(client->database_key);
     free(client);
     client = NULL;
@@ -126,89 +124,81 @@ void getTDatabaseEncryptCode(struct TgClient *client) {
     fclose(encrypt_key);
 }
 
-int readApiKeys(struct TgClient *client) {
-    FILE *keys_storage = fopen("../td-api-key.env", "r");
-    if (keys_storage == NULL) {
-        fclose(keys_storage);
+int readClientParams(struct TgClient *client) {
+    FILE *config_file = fopen("../tg-term-config.json", "r");
+    if (config_file == NULL) {
+        fclose(config_file);
         return -1;
     }
     
-    char *line = NULL;
-    size_t line_len = 0; 
+    fseek(config_file, 0, SEEK_END);
+    size_t config_sz = ftell(config_file);
+    rewind(config_file);
 
-    int read_len = getline(&line, &line_len, keys_storage);
+    char *config = malloc(config_sz);
+    fread(config, 1, config_sz, config_file);
 
-    if (read_len < 1) {
-        fclose(keys_storage);
-        return -1;
+    json_object *config_object = json_tokener_parse(config);
+
+    client->api_id = getIntParam(config_object, "api-id");
+    client->api_hash = getStringParam(config_object, "api-hash");
+    client->log_file = getStringParam(config_object, "log-file");
+    client->log_lvl = getIntParam(config_object, "log-lvl");
+    if (client->log_lvl == INT_MIN) {
+        client->log_lvl = 1;
     }
 
-    client->api_id = atoll(line);    
+    free(config_object);
+    free(config);
 
-    free(line);
-
-    if (client->api_id == 0) {
-        fclose(keys_storage);
-        return -1;
-    }
-
-    line = NULL, line_len = 0;
-
-    read_len = getline(&line, &line_len, keys_storage);
-
-    if (read_len < 1) {
-        fclose(keys_storage);
-        return -1;
-    }
-
-    int hash_len = 0;
-    while ('0' <= line[hash_len] && line[hash_len] <= '9' ||
-             'a' <= line[hash_len] && line[hash_len] <= 'z') ++hash_len;
-
-    client->api_hash = malloc(hash_len + 1);
-    memcpy(client->api_hash, line, hash_len);
-    client->api_hash[hash_len] = '\0';
-    
-    free(line);
-    fclose(keys_storage);
+    fclose(config_file);
 
     return 0;
 }
 
-void setLogsParams(struct TgClient* client, const char* log_file) {
-    FILE* file = fopen(log_file, "w");
+void setLogsParams(struct TgClient* client) {
+    FILE* file = fopen(client->log_file, "w");
     fclose(file);
 
     const char** argv_keys = malloc(sizeof(char*));
     argv_keys[0] = "new_verbosity_level";
 
     json_object** argv_vals = malloc(sizeof(json_object*));
-    argv_vals[0] = json_object_new_int(3);
+    argv_vals[0] = json_object_new_int(client->log_lvl);
 
     sendReq(client, "setLogVerbosityLevel", 1, argv_keys, argv_vals);
 
     free(argv_vals[0]);
 
-    argv_keys[0] = "log_stream";
-    argv_vals[0] = json_object_new_object();
-    json_object_object_add(argv_vals[0], "@type", json_object_new_string("logStreamFile"));
-    json_object_object_add(argv_vals[0], "path", json_object_new_string(log_file));
-    json_object_object_add(argv_vals[0], "max_file_size", json_object_new_int(10485760));
-    json_object_object_add(argv_vals[0], "redirect_stderr", json_object_new_boolean(1));
+    if (client->log_file != NULL) {
+        argv_keys[0] = "log_stream";
+        argv_vals[0] = json_object_new_object();
+        json_object_object_add(argv_vals[0], "@type", json_object_new_string("logStreamFile"));
+        json_object_object_add(argv_vals[0], "path", json_object_new_string(client->log_file));
+        json_object_object_add(argv_vals[0], "max_file_size", json_object_new_int(10485760));
+        json_object_object_add(argv_vals[0], "redirect_stderr", json_object_new_boolean(1));
 
-    sendReq(client, "setLogStream", 1, argv_keys, argv_vals);
+        sendReq(client, "setLogStream", 1, argv_keys, argv_vals);
 
-    free(argv_vals[0]);
+        free(argv_vals[0]);
+    }
+
     free(argv_vals);
     free(argv_keys);
 } 
 
 const char* getStringParam(struct json_object *object, const char *key) {
-    json_object *extracted;
-    if (json_object_object_get_ex(object, key, &extracted)) {
-        return json_object_to_json_string(extracted);
+    if (getParam(object, key) == NULL) {
+        return NULL;
     }
-    return NULL;
+    return json_object_get_string(getParam(object, key));
+}
+
+int getIntParam(struct json_object *object, const char *key) {
+    if (getParam(object, key) == NULL) {
+        return INT_MIN;
+    }
+    return json_object_get_int(getParam(object, key));
 }
 
 struct json_object* getParam(struct json_object *object, const char *key) {

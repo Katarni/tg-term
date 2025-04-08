@@ -12,7 +12,7 @@ add_executable(tg-term
 
 find_package(json-c CONFIG)
 find_package(Curses REQUIRED)
-find_package(Td REQUIRED)
+find_package(Td 1.8.45 REQUIRED)
 find_package(OpenSSL REQUIRED)
 target_link_libraries(tg-term PRIVATE
                              Td::TdJsonStatic 

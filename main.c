@@ -8,7 +8,7 @@ int main(int argc, char **argv) {
         return 0;
     }
     
-    while (true) {
+    while (1) {
         const char* res = td_receive(10);
         if (res == NULL) continue;
 
