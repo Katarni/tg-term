@@ -143,6 +143,9 @@ int readClientParams(struct TgClient *client) {
     client->api_id = getIntParam(config_object, "api-id");
     client->api_hash = getStringParam(config_object, "api-hash");
     client->log_file = getStringParam(config_object, "log-file");
+    if (client->log_file == NULL) {
+        client->log_file = "../logs.dat";
+    }
     client->log_lvl = getIntParam(config_object, "log-lvl");
     if (client->log_lvl == INT_MIN) {
         client->log_lvl = 1;
