@@ -4,7 +4,7 @@ int main(int argc, char **argv) {
     struct TgClient *tg_client = initClient();
 
     if (tg_client == NULL) {
-        printf("Unaviable to create client");
+        printf("Unaviable to create client\n");
         return 0;
     }
     
