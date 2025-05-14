@@ -8,12 +8,14 @@ add_executable(tg-term
                  main.c
                  include/tg-client.h
                  source/tg-client.c
+                 include/tg-loop.h
+                 source/tg-loop.c
 )
 
 find_package(json-c CONFIG)
 find_package(Curses REQUIRED)
 find_package(Td 1.8.45 REQUIRED)
-find_package(OpenSSL REQUIRED)
+find_package(OpenSSL 3.5.0 REQUIRED)
 
 target_link_libraries(tg-term PRIVATE
                              Td::TdJsonStatic 
