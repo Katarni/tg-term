@@ -2,7 +2,7 @@
 Treminal telegram client builded with td json client and ncurces(probably)
 
 ## Starting
-+ get you api key on [telegram site](https://my.telegram.org/)
++ get your api key on [telegram site](https://my.telegram.org/)
 + create tg-term config file in project dir (tg-term-config.json) and set params like this:
   ```
     {
